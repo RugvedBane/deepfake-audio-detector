@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+torch
+torchvision
+librosa
+soundfile
+numpy
+groq
+grad-cam
+scikit-learn
+streamlit
+requests
+yt-dlp
