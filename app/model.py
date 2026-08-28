@@ -4,6 +4,9 @@ import torchvision.models as models
 from preprocess import preprocess_audio
 from explainability import get_gradcam, analyze_heatmap, generate_explanation
 
+torch.set_num_threads(2)
+torch.set_num_interop_threads(1)
+
 # we have again built the same architecture bc the .pth file stores only weight so we again need to built the architecture for inference
 def built_model():
     model = models.efficientnet_b0(weights='IMAGENET1K_V1')
