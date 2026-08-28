@@ -27,21 +27,44 @@ model = built_model()
 model.load_state_dict(torch.load('../models/best_model.pth', map_location=device))
 model.eval()
 
+import time
+
 def predict(audio_bytes: bytes):
+    total_start = time.perf_counter()
+
+    start = time.perf_counter()
     tensor = preprocess_audio(audio_bytes)
+    print(f"PREPROCESS: {time.perf_counter() - start:.2f}s")
+
     tensor = tensor.unsqueeze(0).to(device)
-    
+
+    start = time.perf_counter()
     with torch.no_grad():
         output = model(tensor)
         prob = torch.sigmoid(output).item()
-    
+    print(f"MODEL INFERENCE: {time.perf_counter() - start:.2f}s")
+
     prediction = "fake" if prob >= 0.4 else "real"
     confidence = round(prob * 100, 2)
-    
+
+    start = time.perf_counter()
     heatmap = get_gradcam(model, tensor)
+    print(f"GRADCAM: {time.perf_counter() - start:.2f}s")
+
+    start = time.perf_counter()
     heatmap_analysis = analyze_heatmap(heatmap)
-    explanation = generate_explanation(prediction, confidence, heatmap_analysis)
-    
+    print(f"HEATMAP ANALYSIS: {time.perf_counter() - start:.2f}s")
+
+    start = time.perf_counter()
+    explanation = generate_explanation(
+        prediction,
+        confidence,
+        heatmap_analysis
+    )
+    print(f"GROQ: {time.perf_counter() - start:.2f}s")
+
+    print(f"TOTAL: {time.perf_counter() - total_start:.2f}s")
+
     return {
         "prediction": prediction,
         "confidence": confidence,
