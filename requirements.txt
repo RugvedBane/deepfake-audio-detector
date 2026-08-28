@@ -11,3 +11,6 @@ scikit-learn
 streamlit
 requests
 yt-dlp
+python-dotenv
+plotly
+pandas
