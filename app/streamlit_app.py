@@ -64,13 +64,13 @@ if input_method == "Upload Audio File":
             result = response.json()
         
         if result["prediction"] == "fake":
-            st.error(f"⚠️ FAKE — {result['confidence']}% confidence")
+            st.error(f"FAKE — {result['confidence']}% confidence")
         else:
-            st.success(f"✅ REAL — {result['confidence']}% confidence")
+            st.success(f"REAL — {result['confidence']}% confidence")
         
 
         if "explanation" in result:
-            st.subheader(f"🔍 Why we think it's {result['prediction']}:")
+            st.subheader(f"Why we think it's {result['prediction']}:")
             st.write(result["explanation"])
         
 
@@ -88,31 +88,18 @@ elif input_method == "Record Live":
             
         
         if result["prediction"] == "fake":
-            st.error(f"⚠️ FAKE — {result['confidence']}% confidence")
+            st.error(f"FAKE — {result['confidence']}% confidence")
         else:
-            st.success(f"✅ REAL — {result['confidence']}% confidence")
+            st.success(f"REAL — {result['confidence']}% confidence")
 
         if "explanation" in result:
-            st.subheader(f"🔍 Why we think it's {result['prediction']}:")
+            st.subheader(f"Why we think it's {result['prediction']}:")
             st.write(result["explanation"])
 
 elif input_method == "YouTube URL":
-    url = st.text_input("Paste YouTube URL")
-    
-    if url and st.button("Analyze"):
-        with st.spinner("Extracting and analyzing audio..."):
-            response = requests.post(
-                "http://localhost:8000/predict-youtube",
-                params={"url": url}
-            )
-            result = response.json()
-        
-        if result["prediction"] == "fake":
-            st.error(f"⚠️ FAKE — {result['confidence']}% confidence")
-        else:
-            st.success(f"✅ REAL — {result['confidence']}% confidence")
-
-        if "explanation" in result:
-            st.subheader(f"🔍 Why we think it's {result['prediction']}:")
-            st.write(result["explanation"])
+    st.info(
+        "⚠️ YouTube URL input is disabled on the hosted version. "
+        "Railway's server IPs are blocked by YouTube's bot detection. "
+        "Please upload an audio file instead."
+    )
         
