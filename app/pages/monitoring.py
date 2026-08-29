@@ -13,7 +13,7 @@ st.set_page_config(page_title="Monitoring", layout="wide")
 st.title("Monitoring Dashboard")
 st.caption("Real-time prediction analytics")
 
-response = requests.get("http://localhost:8000/status")
+response = requests.get("https://web-production-e8e0e.up.railway.app/status")
 data = response.json()["predictions"]
 
 
