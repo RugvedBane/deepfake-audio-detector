@@ -57,7 +57,7 @@ if input_method == "Upload Audio File":
     if file and st.button("Analyze"):
         with st.spinner("Analyzing audio..."):
             response = requests.post(
-                "http://localhost:8000/predict",
+                "https://web-production-e8e0e.up.railway.app",
                 files={"file": file},
                 params={"input_method": "upload"}
             )
@@ -80,7 +80,7 @@ elif input_method == "Record Live":
     if audio and st.button("Analyze"):
         with st.spinner("Analyzing..."):
             response = requests.post(
-                "http://localhost:8000/predict",
+                "https://web-production-e8e0e.up.railway.app",
                 files={"file": audio},
                 params={"input_method": "record"}
             )
