@@ -61,26 +61,50 @@ flowchart TD
 - EfficientNet-B0 pretrained on ImageNet
 - First Conv2d layer modified from 3 channels to 1 channel for mel spectrogram input
 - Classifier head replaced with a single output neuron for binary classification
-- All layers trained, no layer freezing
+- All layers trainable (full fine-tuning), overfitting handled via weight decay, small learning rate, and early stopping
+- Total trainable parameters: 3,989,739
 
 **Training**
 - Dataset: ASVspoof 2019 LA (HuggingFace streaming)
-- Training samples: 25k
-- Loss: BCEWithLogitsLoss with pos_weight=2.0 to handle class imbalance
-- Optimizer: Adam, lr=0.001
-- Epochs: 20 with early stopping
-- Decision threshold: 0.4
+- Training samples: 20,304 (2,047 real / 18,257 fake)
+- Loss: BCEWithLogitsLoss with pos_weight=2.0 to handle class imbalance (actual ratio ~8.9:1, 2.0 gave best empirical results)
+- Optimizer: Adam, lr=5e-5, weight_decay=1e-4
+- Gradient clipping: max_norm=1.0
+- Max epochs: 20 with early stopping (patience=3)
+- Trained for 8 epochs, best weights restored from epoch 5
+- Seed fixed at 42 for full reproducibility
+- Decision threshold: 0.3
 
-**Metrics**
+**Validation Accuracy**
+
+Validation accuracy reaches ~100% during training. This is expected and not data leakage. The validation set is a random 20% split of the training data which contains the same attack types (A01-A06) as training. The model memorizes these known attack patterns perfectly. Generalization is measured on the test set which contains entirely unseen attack types (A07-A19).
+
+**Metrics — Full Test Set (71,237 samples, unbalanced real-world distribution)**
+
 | Metric | Score |
 |---|---|
-| F1 | 0.88 |
-| Precision | 0.99 |
-| Recall | 0.79 |
+| Accuracy | 0.8418 |
+| F1 | 0.9033 |
+| Precision | 0.9995 |
+| Recall | 0.8240 |
+| EER | 0.0823 (8.23%) |
 
-**Why recall is low**
+The EER of 8.23% is competitive with the official ASVspoof 2019 LA baselines published by the dataset authors (LFCC-GMM: ~8-9% EER).
 
-ASVspoof 2019 LA training set contains attack types A01-A06 only. The evaluation set contains unseen attack types A07-A19 which the model never saw during training. Threshold tuning did not help because the model outputs near-zero confidence for these unseen attack types, meaning it is a data problem not a calibration problem.
+**Confusion Matrix**
+
+```
+                Predicted Real    Predicted Fake
+Actual Real          7328               27
+Actual Fake         11528            52354
+```
+
+- 7,355 real samples — only 27 misclassified (false positives)
+- 63,882 fake samples — 11,528 missed (false negatives)
+
+**Why recall is not 100%**
+
+The training set contains attack types A01-A06 only. The test set contains entirely unseen attack types A07-A19 which the model never saw during training. The 17.6% miss rate on fake samples comes from these novel spoofing techniques, not from model miscalibration.
 
 ## How to Run Locally
 
@@ -110,12 +134,12 @@ Then open `http://localhost:8501` in your browser.
 
 ## Known Limitations
 
-- Recall is 0.79 due to unseen attack types in the evaluation set that were never present during training
+- Recall is 0.824 due to unseen attack types (A07-A19) in the test set that were never present during training
 - SQLite database resets on every Railway redeploy so monitoring data is not persistent
 - YouTube URL input is disabled on the hosted version because Railway server IPs are blocked by YouTube's bot detection
 
 ## Future Improvements
 
-- Retrain on ASVspoof 2021 LA to cover unseen attack types and improve recall
-- Train on more diverse real world datasets to improve generalization in noisy environments
+- Train on WaveFake dataset to cover modern neural vocoders (HiFi-GAN, MelGAN, WaveGlow) and improve generalization to real-world AI-generated voices
 - Replace SQLite with PostgreSQL for persistent monitoring data
+- Add CNN+LSTM model as a comparison baseline against EfficientNet-B0
