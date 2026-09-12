@@ -68,8 +68,8 @@ Be specific about the frequency regions mentioned.
     response = client.chat.completions.create(
         model="openai/gpt-oss-20b",
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=150,
-        reasoning_effort="low" 
+        max_tokens=400,
+        reasoning_effort="low"
     )
 
     return response.choices[0].message.content

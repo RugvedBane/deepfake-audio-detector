@@ -42,7 +42,11 @@ def predict(audio_bytes: bytes):
         prob = torch.sigmoid(output).item()
     
     prediction = "fake" if prob >= 0.3 else "real"
-    confidence = round(prob * 100, 2)
+
+    if prediction == "fake":
+        confidence = round(prob * 100, 2)
+    else:
+        confidence = round((1 - prob) * 100, 2)
     
     heatmap = get_gradcam(model, tensor)
     heatmap_analysis = analyze_heatmap(heatmap)
@@ -51,7 +55,7 @@ def predict(audio_bytes: bytes):
     return {
         "prediction": prediction,
         "confidence": confidence,
-        "raw_score": round(prob, 4),
+        "raw_score": round(prob, 4), 
         "explanation": explanation,
         "heatmap_analysis": heatmap_analysis
     }
