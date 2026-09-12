@@ -27,7 +27,7 @@ def built_model():
 
 device = torch.device('cpu')
 model = built_model()
-model.load_state_dict(torch.load('../models/best_model.pth', map_location=device))
+model.load_state_dict(torch.load('../models/best_model_v2_f1_90.pth', map_location=device))
 model.eval()
 
 import time
@@ -41,7 +41,7 @@ def predict(audio_bytes: bytes):
         output = model(tensor)
         prob = torch.sigmoid(output).item()
     
-    prediction = "fake" if prob >= 0.4 else "real"
+    prediction = "fake" if prob >= 0.3 else "real"
     confidence = round(prob * 100, 2)
     
     heatmap = get_gradcam(model, tensor)
