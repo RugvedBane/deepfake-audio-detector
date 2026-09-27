@@ -4,7 +4,7 @@ An end to end deepfake audio detection system built with EfficientNet-B0, FastAP
 
 **Live App:** https://deepfake-audio-detector-rugved.streamlit.app/
 
-# Homepage
+## Homepage
 
 ![Homepage](assets/homepage.png)
 
