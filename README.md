@@ -2,6 +2,10 @@
 
 An end to end deepfake audio detection system built with EfficientNet-B0, FastAPI, and Streamlit with Grad-CAM heatmaps and plain English explanations powered by Groq LLM.
 
+**Live App:** https://deepfake-audio-detector-rugved.streamlit.app/
+
+# Homepage
+
 ![Homepage](assets/homepage.png)
 
 ## Demo
